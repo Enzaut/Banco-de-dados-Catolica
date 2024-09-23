@@ -1,40 +1,60 @@
 create database dever_dados;
-
 use dever_dados;
+
 drop table produto;
-create table produto(
-id_produto int primary key auto_increment,
-Categoria enum
-('Equipamentos de Futebol','Roupas Esportivas','Acessórios de Treino'),
-Quant_Estoque int ,
-Preco decimal(6,2) NOT NULL,
-Nome varchar(60) NOT NULL
+
+create table Categoria(
+id_Categoria int primary key auto_increment,
+nome_Categoria varchar(45)
 );
 
-insert into produto (id_produto,Categoria, Quant_Estoque, Preco, Nome)
-values(1,"Equipamentos de Futebol", 100, 89.90, "Camisa de Futebol"),
-(2,"Roupas Esportivas", 50, 299.99, "Tênis de Corrida"),
-(3, "Acessórios de Treino", 200, 25.00, "Faixa de Cabeça");
+create table produto(
+id_produto int primary key auto_increment,
+Quant_Estoque int,
+Preco decimal(6,2) NOT NULL,
+Nome_Prod varchar(60) NOT NULL,
+id_Categoria int,
+FOREIGN KEY (id_Categoria) REFERENCES Categoria(id_Categoria)
+);
 
--- Primeira consulta
-select * from produto;
 
--- Segunda consulta
-select * from produto where Categoria ="Equipamentos de Futebol";
+insert into Categoria (nome_Categoria)
+values('Equipamentos de Futebol'), ('Roupas Esportivas'), ('Acessórios de Treino');
 
--- Terceira consulta
+insert into produto (Quant_Estoque, Preco, Nome_Prod,id_Categoria)
+values(100, 89.90, "Camisa de Futebol", 1),
+(50, 299.99, "Tênis de Corrida", 2),
+(200, 25.00, "Faixa de Cabeça", 3);
+
+-- -----------------------------CONSULTAS------------------------------
+
+-- Consultar todos os produtos com suas categorias;
+select Nome_Prod, Quant_estoque, Preco, nome_Categoria from produto inner join Categoria on Categoria.id_Categoria=produto.id_Categoria;
+
+
+--  Consultar todos os produtos de uma categoria específica (por exemplo,'Equipamentos de Futebol')
+select Nome_Prod, Quant_estoque, Preco, nome_Categoria from produto inner join Categoria on Categoria.id_Categoria=produto.id_Categoria where Categoria.id_Categoria = 1;
+
+
+-- Consultar categorias que têm mais de 50 produtos em estoque;
 select * from produto where Quant_Estoque >= 50;
 
--- Quarta consulta
-update produto set Preco = 279.99 where Nome = "Tênis de Corrida";
 
--- Quinta consulta
-alter table produto modify column Categoria enum
-('Equipamentos de Futebol','Roupas Esportivas','Acessórios de Treino','Calçados Esportivos');
-update produto set Categoria = "Calçados Esportivos" where nome = "Tênis de Corrida";
+-- Alterar o preço de um produto específico (por exemplo, 'Tênis de Corrida') para um novo valor (por exemplo, 279.99);
+update produto set Preco = 279.99 where Nome_Prod = "Tênis de Corrida";
 
--- Sexta consulta
-delete from produto where nome = "Faixa de Cabeça";
+
+-- . Adicionar uma nova categoria e atualizar um produto para essa nova categoria;
+insert into Categoria (nome_Categoria)
+values('Calçados Esportivos');
+
+update produto set produto.id_Categoria = 4 where Nome_Prod = "Tênis de Corrida";
+
+
+-- Excluir um produto específico (por exemplo, 'Faixa de Cabeça').
+delete from produto where Nome_Prod = "Faixa de Cabeça";
+
+-- ---------------------------FIM-------------------------------
 
 show tables;
 show columns from produto;
